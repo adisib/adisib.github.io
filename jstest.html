@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+
+    <meta charset="UTF-8" />
+
+    <title>Javascript Tester</title>
+
+    <link rel="stylesheet" href="css/min/global.css" type="text/css" />
+
+    <style type="text/css">
+        body, #page-container{overflow-y: auto;}
+        #page-container,#content,#footer{background: Menu; color: MenuText;}
+        #status{font-weight: bold;}
+        .code{float: left; margin: 5px; height: 95%; width: 45%; overflow-y: auto; overflow-x: hidden;}
+        .status{overflow-y: auto; overflow-x: hidden;}
+        .code > #jstest{width: 100%; height: 95%; min-height: 50em; font-family: Consolas; font-size: 14px;}
+    </style>
+
+    <script src="js/min/global.js" async></script>
+
+</head>
+
+<body>
+
+<div id="page-container">
+
+    <div id="nav">
+
+        <nav id="nav-items">
+            <span class="nav-item"> <a href="index.html"> Index </a> </span>
+        </nav>
+
+        <hr />
+
+    </div>
+
+    <div id="page">
+
+        <noscript> You can't run javascript code here because you have javascript disabled! </noscript>
+        <div id="content">
+
+            <div class="code">
+                <textarea id="jstest" required>"use strict";&#10;var t0 = performance.now();&#10;&#10;&#10;var t1 = performance.now();&#10;console.log( (t1 - t0) + " ms.");</textarea>
+            </div>
+
+            <div class="output">
+                <br />
+                <button type="button" onclick="execute();">Execute</button>
+                <button type="button" onclick="clearOut();">Clear Output</button>
+                <button type="button" onclick="addDiv();">Add Divider</button>
+                <br />
+                <p id="status"></p>
+                <p id="output"></p>
+                <p id="console"></p>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="footer">
+        <hr />
+        <span> </span>
+    </div>
+
+</div>
+
+<script type="application/javascript;version=1.8">
+// Want to eval outside of scope of our page code
+var geval = eval;
+
+// Redirect console logs to screen output for convinience
+(function(){
+    var oldLog = console.log;
+    console.log = function (message) {
+        document.getElementById("console").innerHTML += message + "<br />";
+        oldLog.apply(console, arguments);
+    };
+})();
+
+function execute()
+{
+    var response = "Code Run Failed";
+    try
+    {
+        var code = document.getElementById("jstest").value;
+        var returnVal = geval("(function(){" + code + "})();");
+        response = "Code Run Complete";
+        if (returnVal)
+        {
+            response += "<br \>   <code>" + returnVal + "</code>";
+        }
+    }
+    catch (ex) {
+        response = "Code Run Failed";
+        response += "<br \>   <code>" + ex + "</code>";
+    }
+
+    document.getElementById("status").innerHTML = response;
+}
+
+function clearOut()
+{
+    document.getElementById("status").innerHTML = "";
+    document.getElementById("output").innerHTML = "";
+    document.getElementById("console").innerHTML = "";
+}
+
+function addDiv()
+{
+    document.getElementById("console").innerHTML += "<hr />";
+}
+</script>
+
+</body>
+
+</html>
+
+
