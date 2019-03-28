@@ -31,7 +31,8 @@ class CountdownTimer
 		this.timerStatus = this.statusList.unstarted;
 
 		this.remainingTimeMS = 0;
-		this.prevUpdateTime = Date.now();
+		this.storedRemainingTime = 0;
+		this.currentStartTime = Date.now();
 		this.timerInterval = null;
 		this.intervalOffsetMS = 0;
 	}
@@ -46,6 +47,8 @@ class CountdownTimer
 		}
 
 		this.remainingTimeMS = startTimeSeconds * 1000;
+		this.storedRemainingTime = this.remainingTimeMS;
+		this.currentStartTime = Date.now();
 		this.timerInterval = setInterval(function(obj) { obj.m_update(); }, this.updateInterval, this);
 
 		this.timerStatus = this.statusList.started;
@@ -60,6 +63,7 @@ class CountdownTimer
 		}
 
 		this.remainingTimeMS = 0;
+		this.storedRemainingTime = 0;
 
 		this.timerStatus = this.statusList.stopped;
 	}
@@ -73,9 +77,8 @@ class CountdownTimer
 
 			// We have to track our progress into the update, so that there isn't time gain from pausing
 			let newTimestamp = Date.now();
-			this.intervalOffsetMS = newTimestamp - this.prevUpdateTime;
-			this.remainingTimeMS -= newTimestamp - this.prevUpdateTime;
-			this.prevUpdateTime = newTimestamp;
+			this.storedRemainingTime -= newTimestamp - this.currentStartTime;
+			this.intervalOffsetMS = this.remainingTimeMS - this.storedRemainingTime;
 
 			this.timerStatus = this.statusList.paused;
 		}
@@ -86,7 +89,7 @@ class CountdownTimer
 	{
 		if (this.timerStatus === this.statusList.paused)
 		{
-			this.prevUpdateTime = Date.now();
+			this.currentStartTime = Date.now();
 			setTimeout( function(obj) {
 				obj.timerInterval = setInterval(function(iobj) { iobj.m_update(); }, obj.updateInterval, obj);
 				obj.m_update();
@@ -104,9 +107,12 @@ class CountdownTimer
 
 	m_update()
 	{
+		// We want to avoid using the remaining time in its calculation to avoid inaccuracy due to limited precision of our timer
+		// e.g., if 1.01 ms passes in the case setInterval isn't extremely precise, we would only record 1 ms passing that update, giving us error that could eventually build up to be measureable.
+		// So we avoid using our own updated remaining time to determine the remaining time (though we still do this upon pause/resume which doesn't happen often enough to matter).
+		// I don't think this error would build up enough to be noticible in practice, but handle it anyway.
 		let newTimestamp = Date.now();
-		this.remainingTimeMS -= newTimestamp - this.prevUpdateTime;
-		this.prevUpdateTime = newTimestamp;
+		this.remainingTimeMS = this.storedRemainingTime - (newTimestamp - this.currentStartTime);
 
 		if (this.remainingTimeMS < this.updateInterval)
 		{
