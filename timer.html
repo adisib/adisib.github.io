@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+
+    <meta charset="UTF-8" />
+
+    <title> Timer </title>
+
+    <link rel="stylesheet" type="text/css" href="css/min/global.css" />
+	<link rel="stylesheet" type="text/css" href="css/min/timer.css">
+
+    <script src="js/min/global.js" async></script>
+	<script src="js/min/timer.js" defer></script>
+
+	<!-- <link rel="stylesheet" type="text/css" href="css/global.css" /> -->
+	<!-- <link rel="stylesheet" type="text/css" href="css/timer.css"> -->
+
+    <!-- <script src="js/global.js" async></script> -->
+	<!-- <script src="js/timer.js" defer></script> -->
+
+</head>
+
+<body>
+
+<div id="page-container">
+
+    <div id="nav">
+        <nav id="nav-items">
+            <span class="nav-item"> <a href="index.html"> Index </a> </span>
+        </nav>
+
+        <hr />
+    </div>
+
+    <div id="page" class="tabbed-page active-tab">
+        <noscript> Javascript is not enabled or is blocked. This page requires javascript to function. Enable it and refresh the page to use. </noscript>
+
+        <div id="content">
+			<!-- TODO: Start and stop buttons should be aligned? -->
+
+			<div id="config" class="v-center h-tquad">
+				<!-- Right now you only can do a countdown timer -->
+				<form id="countdown">
+					<p> Time in minutes: </p>
+					<!-- I want to be able to parse multiple formats (<input> pattern attribute), but for now just accept minutes and output hours + minutes + seconds -->
+					<input id="countdown-time" type="number" name="time" value="5" required autofocus />
+				</form>
+				<br />
+				<button id="timer-start"> Start Countdown </button>
+			</div>
+
+			<!-- Actual timer stuff here -->
+			<div id="timer" class="hidden v-center h-tquad">
+				<h2 id="time-display"> 0:00:00 </h2>
+				<button id="timer-stop"> Stop Countdown </button>
+				<button id="timer-pause"> Pause Countdown </button>
+				<button id="timer-resume"> Resume Countdown </button>
+			</div>
+
+        </div>
+    </div>
+
+    <div id="footer">
+        <hr />
+        <span> </span>
+    </div>
+
+</div>
+
+</body>
+
+</html>
+
+

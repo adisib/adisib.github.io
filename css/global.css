@@ -2,6 +2,8 @@
 /* General structure for right now is tags before ids before classes */
 /* Ordered from outermost to innermost, such as body tag before hr tag, or page-container id before nav-items id */
 
+/* Common structure rules */
+
 html
 {
     margin: 0px;
@@ -46,6 +48,9 @@ hr
     margin: 16px;
     width: calc(100% - 32px); /* 32 from margin */
     height: calc(100% - 92px); /* 60px for footer and 32 from padding */
+	
+	/* Must be position absolute for proper calculation of 100% height */
+	position: absolute;
 }
 
 #nav
@@ -77,7 +82,7 @@ hr
     width: 100px;
     height: 32px;
 
-    overflow: hidden; 
+    overflow: hidden;
     text-align: center;
 
     border-right: 1px solid black;
@@ -90,7 +95,7 @@ hr
     height: 100%;
     padding-top: 5px;
 
-    overflow: hidden; 
+    overflow: hidden;
     text-decoration: none;
     font-weight: bold;
 
@@ -114,7 +119,54 @@ hr
     display: none;
 }
 
+/* General Utility classes */
+
 .hidden
 {
     display: none;
+}
+
+.center
+{
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	margin: auto;
+	text-align: center;
+	transform: translate(-50%, -50%);
+}
+
+.v-center
+{
+	position: absolute;
+	left: 50%;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	transform: translateX(-50%);
+}
+
+.h-center
+{
+	position: absolute;
+	top: 50%;
+	margin-top: auto;
+	margin-bottom: auto;
+	transform: translateY(-25%);
+}
+
+.h-tquad
+{
+	position: absolute;
+	top: 25%;
+	margin-top: auto;
+	margin-bottom: auto;
+}
+
+.h-bquad
+{
+	position: absolute;
+	bottom: 25%;
+	margin-top: auto;
+	margin-bottom: auto;
 }
