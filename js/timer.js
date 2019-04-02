@@ -30,11 +30,11 @@ class CountdownTimer
 
 		this.timerStatus = this.statusList.unstarted;
 
-		this.remainingTimeMS = 0;
-		this.storedRemainingTime = 0;
+		this.remainingTimeMS = (0n);
+		this.storedRemainingTime = (0n);
 		this.currentStartTime = Date.now();
 		this.timerInterval = null;
-		this.intervalOffsetMS = 0;
+		this.intervalOffsetMS = (0n);
 	}
 
 	// Starts a new countdown timer starting at the specified total time in seconds, and ending at time=0
@@ -46,10 +46,10 @@ class CountdownTimer
 			this.stop();
 		}
 
-		this.remainingTimeMS = startTimeSeconds * 1000;
+		this.remainingTimeMS = BigInt(startTimeSeconds) * 1000n;
 		this.storedRemainingTime = this.remainingTimeMS;
 		this.currentStartTime = Date.now();
-		this.timerInterval = setInterval(function(obj) { obj.m_update(); }, this.updateInterval, this);
+		this.timerInterval = setInterval(function(obj) { obj.m_update(); }, parseInt(this.updateInterval), this);
 
 		this.timerStatus = this.statusList.started;
 	}
@@ -62,8 +62,8 @@ class CountdownTimer
 			clearInterval(this.timerInterval);
 		}
 
-		this.remainingTimeMS = 0;
-		this.storedRemainingTime = 0;
+		this.remainingTimeMS = 0n;
+		this.storedRemainingTime = 0n;
 
 		this.timerStatus = this.statusList.stopped;
 	}
@@ -102,7 +102,7 @@ class CountdownTimer
 	// Returns the total time remaining in milliseconds
 	getTimeRemaining()
 	{
-		return this.remainingTimeMS;
+		return (this.remainingTimeMS);
 	}
 
 	m_update()
@@ -112,11 +112,11 @@ class CountdownTimer
 		// So we avoid using our own updated remaining time to determine the remaining time (though we still do this upon pause/resume which doesn't happen often enough to matter).
 		// I don't think this error would build up enough to be noticible in practice, but handle it anyway.
 		let newTimestamp = Date.now();
-		this.remainingTimeMS = this.storedRemainingTime - (newTimestamp - this.currentStartTime);
+		this.remainingTimeMS = this.storedRemainingTime - BigInt(newTimestamp - this.currentStartTime);
 
 		if (this.remainingTimeMS < this.updateInterval)
 		{
-			if (this.remainingTimeMS <= 0)
+			if (this.remainingTimeMS <= 0n)
 			{
 				this.completeCallback();
 				this.stop();
@@ -143,7 +143,7 @@ class CountdownTimer
 
 const DEBUG = false;
 
-const updateIntervalMS = 16; // in Milliseconds
+const updateIntervalMS = 16n; // in Milliseconds
 // we will do 16 to ensure an update on every refresh of a 60Hz display (though this doesn't guarantee each refresh is of equal size)
 // It would be better if we could get the refresh rate and decide to adjust update rate accordingly, but I don't want to force us to use refresh rate with requestAnimationFrame.
 
@@ -169,7 +169,7 @@ let currentTimer;
 function startCountdownTimer()
 {
 	let timeInput = document.getElementById("countdown-time");
-	let inputInt = parseFloat(timeInput.value);
+	let inputInt = BigInt(timeInput.value);
 	if (!inputInt)
 	{
 		// Invalid input, so don't start timer
@@ -182,7 +182,7 @@ function startCountdownTimer()
 	configDiv.classList.add("hidden");
 
 	currentTimer = new CountdownTimer(updateIntervalMS, updateDisplaysFromTimer, timerEndNotify);
-	currentTimer.start(inputInt * 60); // Minutes to Seconds
+	currentTimer.start(inputInt * 60n); // Minutes to Seconds
 	debugLog("Timer Started");
 
 	// Do immediate update
@@ -192,7 +192,7 @@ function startCountdownTimer()
 // Pauses the countdown timer
 function pauseCountdownTimer()
 {
-	if (currentTimer.getTimeRemaining() > 0)
+	if (currentTimer.getTimeRemaining() > 0n)
 	{
 		currentTimer.pause();
 		background.classList.add("timer-paused");
@@ -203,7 +203,7 @@ function pauseCountdownTimer()
 // Unpauses the countdown timer
 function resumeCountdownTimer()
 {
-	if (currentTimer.getTimeRemaining() > 0)
+	if (currentTimer.getTimeRemaining() > 0n)
 	{
 		background.classList.remove("timer-paused");
 		currentTimer.resume();
@@ -228,8 +228,8 @@ function endCountdownTimer()
 
 function timerEndNotify()
 {
-	updateTextDisplay(0);
-	updateBackgroundDisplay(0);
+	updateTextDisplay(0n);
+	updateBackgroundDisplay(0n);
 	debugLog("Timer Ended");
 	// Play a sound?
 }
@@ -250,13 +250,13 @@ function updateTextDisplay(timeInMilliseconds)
 
 	if (textDisplay)
 	{
-		let timeVal = timeInMilliseconds;
-		let centiseconds = parseInt((timeVal % 1000) / 10, 10); timeVal /= 1000;
-		let seconds = parseInt(timeVal % 60, 10); timeVal /= 60;
-		let minutes = parseInt(timeVal % 60, 10); timeVal /= 60;
-		let hours = parseInt(timeVal % 60, 10);
-
-		textDisplay.textContent = `${numToTwoDigitStr(hours)}:${numToTwoDigitStr(minutes)}:${numToTwoDigitStr(seconds)}:${numToTwoDigitStr(centiseconds)}`;
+		let timeVal = BigInt(timeInMilliseconds);
+		let centiseconds = ((timeVal % 1000n) / 10n); timeVal /= 1000n;
+		let seconds = (timeVal % 60n); timeVal /= 60n;
+		let minutes = (timeVal % 60n); timeVal /= 60n;
+		let hours = (timeVal % 60n); timeVal /= 60n;
+		let days = (timeVal / 24n); 
+		textDisplay.textContent = `${numToTwoDigitStr(days)}:${numToTwoDigitStr(hours)}:${numToTwoDigitStr(minutes)}:${numToTwoDigitStr(seconds)}:${numToTwoDigitStr(centiseconds)}`;
 	}
 }
 
@@ -266,9 +266,9 @@ function updateBackgroundDisplay(timeInMilliseconds)
 	// For now this only changes color for time status, and other functions might change the color for other reasons.
 	if (background)
 	{
-		if (timeInMilliseconds < 60000)
+		if (timeInMilliseconds < 60000n)
 		{
-			if (timeInMilliseconds <= 0)
+			if (timeInMilliseconds <= 0n)
 			{
 				background.classList.add("timer-end");
 			}
@@ -287,7 +287,7 @@ function updateBackgroundDisplay(timeInMilliseconds)
 // Because the nice ways to do this are poorly supported...
 function numToTwoDigitStr(num)
 {
-	if (num < 10)
+	if (num < 10n)
 	{
 		return '0' + num;
 	}
