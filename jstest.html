@@ -20,6 +20,53 @@
 
     <script src="js/min/global.js" async></script>
 
+	<script>
+	// Want to eval outside of scope of our page code
+	var geval = eval;
+
+	// Redirect console logs to screen output for convinience
+	(function(){
+		var oldLog = console.log;
+		console.log = function (message) {
+			document.getElementById("console").innerHTML += message + "<br />";
+			oldLog.apply(console, arguments);
+		};
+	})();
+
+	function execute()
+	{
+		var response = "Code Run Failed";
+		try
+		{
+			var code = document.getElementById("jstest").value;
+			var returnVal = geval("(function(){" + code + "})();");
+			response = "Code Run Complete";
+			if (returnVal)
+			{
+				response += "<br \>   <code>" + returnVal + "</code>";
+			}
+		}
+		catch (ex) {
+			response = "Code Run Failed";
+			response += "<br \>   <code>" + ex + "</code>";
+		}
+
+		document.getElementById("status").innerHTML = response;
+	}
+
+	function clearOut()
+	{
+		document.getElementById("status").innerHTML = "";
+		document.getElementById("output").innerHTML = "";
+		document.getElementById("console").innerHTML = "";
+	}
+
+	function addDiv()
+	{
+		document.getElementById("console").innerHTML += "<hr />";
+	}
+	</script>
+
 </head>
 
 <body>
@@ -65,53 +112,6 @@
     </div>
 
 </div>
-
-<script type="application/javascript;version=1.8">
-// Want to eval outside of scope of our page code
-var geval = eval;
-
-// Redirect console logs to screen output for convinience
-(function(){
-    var oldLog = console.log;
-    console.log = function (message) {
-        document.getElementById("console").innerHTML += message + "<br />";
-        oldLog.apply(console, arguments);
-    };
-})();
-
-function execute()
-{
-    var response = "Code Run Failed";
-    try
-    {
-        var code = document.getElementById("jstest").value;
-        var returnVal = geval("(function(){" + code + "})();");
-        response = "Code Run Complete";
-        if (returnVal)
-        {
-            response += "<br \>   <code>" + returnVal + "</code>";
-        }
-    }
-    catch (ex) {
-        response = "Code Run Failed";
-        response += "<br \>   <code>" + ex + "</code>";
-    }
-
-    document.getElementById("status").innerHTML = response;
-}
-
-function clearOut()
-{
-    document.getElementById("status").innerHTML = "";
-    document.getElementById("output").innerHTML = "";
-    document.getElementById("console").innerHTML = "";
-}
-
-function addDiv()
-{
-    document.getElementById("console").innerHTML += "<hr />";
-}
-</script>
 
 </body>
 
